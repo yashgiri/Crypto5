@@ -2,14 +2,32 @@
 # from cryptography.hazmat.primitives.asymmetric import padding
 # from cryptography.hazmat.backends import default_backend
 import cryptography
+import argparse
 from OpenSSL.crypto import *
 
 
-def task1():
-    crt_data = open("subject.crt", "rb").read()
+def parse():
+    parser = argparse.ArgumentParser(description="Applied Cryptography assignment 5",
+                                     usage="python3 CertAuth.py Certs/cert_bckup.p12 Certs/root.crt Certs/subject.crt "
+                                           "CSE539_Rocks!")
+    parser.add_argument('arguments', type=str, nargs=4)
+    args = parser.parse_args()
+    return args.arguments
+
+
+def task1(arguments):
+
+    PRIVATE_KEY_FILE_PATH = arguments[0]
+    ROOT_CERT_FILE_PATH = arguments[1]
+    SUBJECT_CERT_FILE_PATH = arguments[2]
+    PRIVATE_KEY_PASSWORD = arguments[3]
+    print(PRIVATE_KEY_PASSWORD)
+    print(ROOT_CERT_FILE_PATH)
+
+    crt_data = open(SUBJECT_CERT_FILE_PATH, "rb").read()
     subject_certificate = load_certificate(FILETYPE_PEM, crt_data)
 
-    root_crt_data = open("root.crt", "rb").read()
+    root_crt_data = open(ROOT_CERT_FILE_PATH, "rb").read()
     root_certificate = load_certificate(FILETYPE_PEM, root_crt_data)
     # task1
 
@@ -33,8 +51,10 @@ def task1():
     print(subject_certificate.get_notAfter().decode())
 
     # task 3
-    print()
+    print(subject_certificate.get_pubkey())
 
 
 if  __name__ == "__main__":
-    task1()
+
+    args = parse()
+    task1(args)
