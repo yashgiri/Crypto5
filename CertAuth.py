@@ -7,10 +7,12 @@ from OpenSSL.crypto import *
 
 
 def parse():
-    parser = argparse.ArgumentParser(description="Applied Cryptography assignment 5",
-                                     usage="python3 CertAuth.py Certs/cert_bckup.p12 Certs/root.crt Certs/subject.crt "
-                                           "CSE539_Rocks!")
-    parser.add_argument('arguments', type=str, nargs=4)
+    parser = argparse.ArgumentParser(description=
+                                     "Sample : python3 CertAuth.py cert_bckup.p12 root.crt subject.crt CSE539_Rocks!",
+                                     usage="python3 CertAuth.py <path for backup private key> <CA public certificate> "
+                                           "<subject public certificate> <password for backup private key>")
+    parser.add_argument('arguments', type=str, nargs=4, help="includes file paths and passwords needed for successful "
+                                                             "execution")
     args = parser.parse_args()
     return args.arguments
 
