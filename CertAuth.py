@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from cryptography import x509, exceptions
 # from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.hazmat.backends import default_backend
@@ -22,11 +23,22 @@ def task1(arguments):
     SUBJECT_CERT_FILE_PATH = arguments[2]
     PRIVATE_KEY_PASSWORD = arguments[3]
 
-    crt_data = open(SUBJECT_CERT_FILE_PATH, "rb").read()
-    subject_certificate = load_certificate(FILETYPE_PEM, crt_data)
 
-    root_crt_data = open(ROOT_CERT_FILE_PATH, "rb").read()
-    root_certificate = load_certificate(FILETYPE_PEM, root_crt_data)
+    # load the certificate files
+    # using 'with open(...) as file' closes the file automatically
+    with open(SUBJECT_CERT_FILE_PATH, "rb") as file: 
+        crt_data = file.read()
+        subject_certificate = load_certificate(FILETYPE_PEM, crt_data)
+        subject_certificate_x509 = x509.load_pem_x509_certificate(crt_data, default_backend())
+    
+    with open(ROOT_CERT_FILE_PATH, "rb") as file:
+        root_crt_data = file.read()
+        root_certificate = load_certificate(FILETYPE_PEM, root_crt_data)
+        root_certificate_x509 = x509.load_pem_x509_certificate(root_crt_data, default_backend())
+    
+    with open(PRIVATE_KEY_FILE_PATH, "rb") as file:
+        subject_pkcs12 = load_pkcs12(file.read(), PRIVATE_KEY_PASSWORD)
+        
     # task 1
 
     root_cert_store = X509Store()
@@ -49,14 +61,16 @@ def task1(arguments):
     print(subject_certificate.get_notAfter().decode())
 
     # task 3
-    publickey = subject_certificate.get_pubkey()
-    privatekey_data = open(PRIVATE_KEY_FILE_PATH, "rb").read()
-    privatekey = load_pkcs12(privatekey_data, PRIVATE_KEY_PASSWORD)
-    print(privatekey.get_privatekey().to_cryptography_key())
-
+    subject_numbers = subject_certificate_x509.public_key().public_numbers()
+    subject_private_numbers = subject_pkcs12.get_privatekey().to_cryptography_key().private_numbers()
+    print(subject_numbers.n)
+    print(subject_numbers.e)
+    print(subject_private_numbers.d)
+    
     # task 4
-    root_publickey = root_certificate.get_pubkey()
-    print(publickey.to_cryptography_key())
+    root_numbers = root_certificate_x509.public_key().public_numbers()
+    print(root_numbers.n)
+    print(root_numbers.e)
 
     # task 5 - Signature
     subject_x509_data = open(SUBJECT_CERT_FILE_PATH, "rb").read()
