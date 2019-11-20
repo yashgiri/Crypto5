@@ -1,8 +1,7 @@
-#!/usr/bin/env python3
-from cryptography import x509, exceptions
-# from cryptography.hazmat.primitives.asymmetric import padding
+from cryptography import x509
+from cryptography.hazmat.primitives.asymmetric import padding
+from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.backends import default_backend
-#import cryptography
 import argparse
 from OpenSSL.crypto import *
 
@@ -16,6 +15,13 @@ def parse():
                                                              "execution")
     args = parser.parse_args()
     return args.arguments
+
+
+def get_hex(test):
+    values = []
+    for char in test:
+        values.append('{0:02x}'.format(int(char)))
+    return "".join(values)
 
 
 def task1(arguments):
@@ -79,16 +85,18 @@ def task1(arguments):
     subject_x509_data = open(SUBJECT_CERT_FILE_PATH, "rb").read()
     subject_x509 = x509.load_pem_x509_certificate(subject_x509_data, default_backend())
     signature = subject_x509.signature
-    sign = []
-    for char in signature:
-        sign.append('{0:02x}'.format(int(char)))
-    print("".join(sign))
+    print(get_hex(signature))
 
     # task 6
-    # subject_cert_x509_data = open(SUBJECT_CERT_FILE_PATH, "rb").read()
-    # subject_cert_x509 = x509.load_pem_x509_certificate(subject_cert_x509_data, default_backend())
-    # pubkey = subject_cert_x509.
-    # publickey.encrypt(b"Hello World", )
+    test_string = b'Hello World'
+    subject_cert_x509_data = open(SUBJECT_CERT_FILE_PATH, "rb").read()
+    subject_cert_x509 = x509.load_pem_x509_certificate(subject_cert_x509_data, default_backend())
+    pubkey = subject_cert_x509.public_key()
+    algo_256 = hashes.SHA256()
+    test_padding = padding.MGF1(algo_256)
+    test_padding = padding.OAEP(mgf=test_padding, algorithm=algo_256, label=None)
+    encrypted_string = pubkey.encrypt(test_string, test_padding)
+    print(get_hex(encrypted_string))
 
 if  __name__ == "__main__":
 
