@@ -56,7 +56,8 @@ def task1(arguments):
     print(subject_certificate.get_subject().CN)
     print(subject_certificate.get_issuer().CN)
     print(subject_certificate.get_serial_number())
-    print(subject_certificate.get_signature_algorithm().decode())
+    #print(root_certificate_x509.signature_hash_algorithm.name) # for the root's hashing algorithm
+    print(subject_certificate_x509.signature_hash_algorithm.name)
     print(subject_certificate.get_notBefore().decode())
     print(subject_certificate.get_notAfter().decode())
 

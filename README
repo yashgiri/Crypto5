@@ -1,0 +1,6 @@
+To run our program, simply run:
+python3 CertAuth.py p12Filepath rootFilepath subjectFilepath password
+where p12Filepath is the path to a .p12 file containing the subject's private key,
+rootFilepath is the path to a root's certificate file,
+subjectFilepath is the path to a subject's certificate file,
+and password is the password to the p12 file.
