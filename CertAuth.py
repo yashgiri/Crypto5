@@ -24,13 +24,12 @@ def get_hex(test):
     return "".join(values)
 
 
-def task1(arguments):
+def tasks(arguments):
 
     PRIVATE_KEY_FILE_PATH = arguments[0]
     ROOT_CERT_FILE_PATH = arguments[1]
     SUBJECT_CERT_FILE_PATH = arguments[2]
     PRIVATE_KEY_PASSWORD = arguments[3]
-
 
     # load the certificate files
     # using 'with open(...) as file' closes the file automatically
@@ -61,30 +60,41 @@ def task1(arguments):
         print(True)
 
     # task 2
+    print()
     print(subject_certificate.get_subject().CN)
+    print()
     print(subject_certificate.get_issuer().CN)
+    print()
     print(subject_certificate.get_serial_number())
-    #print(root_certificate_x509.signature_hash_algorithm.name) # for the root's hashing algorithm
+    print()
     print(subject_certificate_x509.signature_hash_algorithm.name)
+    print()
     print(subject_certificate.get_notBefore().decode())
+    print()
     print(subject_certificate.get_notAfter().decode())
 
     # task 3
     subject_numbers = subject_certificate_x509.public_key().public_numbers()
     subject_private_numbers = subject_pkcs12.get_privatekey().to_cryptography_key().private_numbers()
+    print()
     print(subject_numbers.n)
+    print()
     print(subject_numbers.e)
+    print()
     print(subject_private_numbers.d)
     
     # task 4
     root_numbers = root_certificate_x509.public_key().public_numbers()
+    print()
     print(root_numbers.n)
+    print()
     print(root_numbers.e)
 
     # task 5 - Signature
     subject_x509_data = open(SUBJECT_CERT_FILE_PATH, "rb").read()
     subject_x509 = x509.load_pem_x509_certificate(subject_x509_data, default_backend())
     signature = subject_x509.signature
+    print()
     print(get_hex(signature))
 
     # task 6
@@ -96,9 +106,10 @@ def task1(arguments):
     test_padding = padding.MGF1(algo_256)
     test_padding = padding.OAEP(mgf=test_padding, algorithm=algo_256, label=None)
     encrypted_string = pubkey.encrypt(test_string, test_padding)
+    print()
     print(get_hex(encrypted_string))
 
-if  __name__ == "__main__":
 
+if  __name__ == "__main__":
     args = parse()
-    task1(args)
+    tasks(args)
